@@ -2,19 +2,19 @@ Source: cyrus-sasl2
 Section: libs
 Priority: standard
 Maintainer: Debian Cyrus SASL Team <pkg-cyrus-sasl2-debian-devel@lists.alioth.debian.org>
-Uploaders: Fabian Fagerholm <fabbe@debian.org>, Roberto C. Sanchez <roberto@connexer.com>
-Standards-Version: 3.8.3
-Build-Depends: debhelper (>= 5.0.0), dpatch, autotools-dev, automake1.9, autoconf, libtool, libdb4.8-dev, libpam0g-dev (>= 0.76-22), libssl-dev (>= 0.9.7e-3), libmysqlclient-dev | libmysqlclient15-dev (>= 5.0.20), libopie-dev (>= 2.32-10), libpq-dev (>= 8.1.3-4), heimdal-multidev, krb5-multidev, libsqlite0-dev (>= 2.8.16), libldap2-dev (>= 2.1.30-8), chrpath, groff-base, debconf (>= 0.5) | debconf-2.0, po-debconf, docbook-to-man
+Uploaders: Fabian Fagerholm <fabbe@debian.org>, Roberto C. Sanchez <roberto@connexer.com>, Ondřej Surý <ondrej@debian.org>
+Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), quilt (>= 0.46-7~), autotools-dev, automake, autoconf, libtool, libdb-dev, libpam0g-dev (>= 0.76-22), libssl-dev (>= 0.9.7e-3), libmysqlclient-dev | libmysqlclient15-dev (>= 5.0.20), libpq-dev (>= 8.1.3-4), heimdal-multidev, krb5-multidev, libsqlite3-dev, libldap2-dev (>= 2.1.30-8), chrpath, groff-base, debconf (>= 0.5) | debconf-2.0, po-debconf, docbook-to-man, hardening-wrapper
 Build-Conflicts: heimdal-dev
-Vcs-Browser: http://svn.debian.org/wsvn/pkg-cyrus-sasl2/cyrus-sasl-2.1/trunk/
-Vcs-Svn: svn://svn.debian.org/svn/pkg-cyrus-sasl2/cyrus-sasl-2.1/trunk/
-Homepage: http://cyrusimap.web.cmu.edu/
+Vcs-Browser: http://git.debian.org/?p=pkg-cyrus-sasl2/cyrus-sasl2.git
+Vcs-Git: git://git.debian.org/pkg-cyrus-sasl2/cyrus-sasl2/
+Homepage: http://www.cyrusimap.org/
 
 Package: sasl2-bin
 Section: utils
 Priority: optional
 Architecture: any
-Depends: libsasl2-2 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, lsb-base (>= 3.0-6), db4.8-util, debconf (>= 1.4.69) | cdebconf (>= 0.39)
+Depends: libsasl2-2 (>= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}, lsb-base (>= 3.0-6), db-util, debconf (>= 1.4.69) | cdebconf (>= 0.39)
 Description: Cyrus SASL - administration programs for SASL users database
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
@@ -35,9 +35,11 @@ Description: Cyrus SASL - documentation
 
 Package: libsasl2-2
 Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}
-Conflicts: postfix (<< 2.3.4-3), libsasl2-gssapi-mit (<< 2.1.22), libsasl2-krb4-mit (<< 2.1.22)
 Recommends: libsasl2-modules (= ${binary:Version})
+Breaks: postfix (<= 2.8.3-1), slapd (<= 2.4.25-3)
 Replaces: libsasl2
 Description: Cyrus SASL - authentication abstraction library
  This is the Cyrus SASL API implementation, version 2.1.
@@ -58,6 +60,7 @@ Description: Cyrus SASL - authentication abstraction library
 Package: libsasl2-modules
 Priority: optional
 Architecture: any
+Multi-Arch: same
 Depends: libsasl2-2 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Suggests: libsasl2-modules-otp, libsasl2-modules-ldap, libsasl2-modules-sql, libsasl2-modules-gssapi-mit | libsasl2-modules-gssapi-heimdal
 Description: Cyrus SASL - pluggable authentication modules
@@ -70,6 +73,7 @@ Description: Cyrus SASL - pluggable authentication modules
 Package: libsasl2-modules-ldap
 Priority: extra
 Architecture: any
+Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Cyrus SASL - pluggable authentication modules (LDAP)
  This is the Cyrus SASL API implementation, version 2.1. See package
@@ -80,8 +84,8 @@ Description: Cyrus SASL - pluggable authentication modules (LDAP)
 Package: libsasl2-modules-otp
 Priority: extra
 Architecture: any
+Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Conflicts: libsasl2-modules (<< 2.1.22~)
 Description: Cyrus SASL - pluggable authentication modules (OTP)
  This is the Cyrus SASL API implementation, version 2.1. See package
  libsasl2-2 and RFC 2222 for more information.
@@ -91,6 +95,7 @@ Description: Cyrus SASL - pluggable authentication modules (OTP)
 Package: libsasl2-modules-sql
 Priority: extra
 Architecture: any
+Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Description: Cyrus SASL - pluggable authentication modules (SQL)
  This is the Cyrus SASL API implementation, version 2.1. See package
@@ -102,6 +107,7 @@ Description: Cyrus SASL - pluggable authentication modules (SQL)
 Package: libsasl2-modules-gssapi-mit
 Priority: extra
 Architecture: any
+Multi-Arch: same
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libsasl2-modules-gssapi-heimdal
 Description: Cyrus SASL - pluggable authentication modules (GSSAPI)
@@ -116,8 +122,6 @@ Section: libdevel
 Architecture: any
 Priority: optional
 Depends: libsasl2-modules (= ${binary:Version}), libc6-dev, ${misc:Depends}
-Conflicts: libsasl2-2-dev
-Replaces: libsasl2-2-dev
 Description: Cyrus SASL - development files for authentication abstraction library
  This is the Cyrus SASL API implementation, version 2. See package
  libsasl2-2 and RFC 2222 for more information.
@@ -127,6 +131,7 @@ Description: Cyrus SASL - development files for authentication abstraction libra
 
 Package: libsasl2-modules-gssapi-heimdal
 Architecture: any
+Multi-Arch: same
 Priority: extra
 Depends: libsasl2-modules (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Conflicts: libsasl2-modules-gssapi-mit
@@ -141,7 +146,8 @@ Package: cyrus-sasl2-dbg
 Section: debug
 Architecture: any
 Priority: extra
-Depends: libsasl2-2 (= ${binary:Version}), ${misc:Depends}, cyrus-sasl2-mit-dbg | cyrus-sasl2-heimdal-dbg
+Depends: libsasl2-2 (= ${binary:Version}), ${misc:Depends}
+Recommends: cyrus-sasl2-mit-dbg | cyrus-sasl2-heimdal-dbg
 Description: Cyrus SASL - debugging symbols
  This is the Cyrus SASL API implementation, version 2. See package
  libsasl2-2 and RFC 2222 for more information.
@@ -157,7 +163,7 @@ Architecture: any
 Priority: extra
 Depends: cyrus-sasl2-dbg (= ${binary:Version}), libsasl2-modules-gssapi-mit (= ${binary:Version}), ${misc:Depends}
 Conflicts: cyrus-sasl2-heimdal-dbg
-Description: Cyrus SASL - debugging symbols
+Description: Cyrus SASL - debugging symbols for MIT modules
  This is the Cyrus SASL API implementation, version 2. See package
  libsasl2-2 and RFC 2222 for more information.
  .
@@ -173,7 +179,7 @@ Architecture: any
 Priority: extra
 Depends: cyrus-sasl2-dbg (= ${binary:Version}), libsasl2-modules-gssapi-heimdal (= ${binary:Version}), ${misc:Depends}
 Conflicts: cyrus-sasl2-mit-dbg
-Description: Debugging symbols for Cyrus SASL
+Description: Cyrus SASL - debugging symbols for Heimdal modules
  This is the Cyrus SASL API implementation, version 2. See package
  libsasl2-2 and RFC 2222 for more information.
  .

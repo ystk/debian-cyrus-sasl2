@@ -1,3 +1,184 @@
+cyrus-sasl2 (2.1.25.dfsg1-6+deb7u1) stable; urgency=low
+
+  * Fix heavy CPU usage in saslauthd (Closes: #708552)
+  * Send LOGOUT before closing connection in auth_rimap (Closes: #708547)
+  * Fix garbage in output buffer when using canonuser_plugin: ldapdb
+    (Closes: #689346)
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 17 May 2013 18:11:26 +0200
+
+cyrus-sasl2 (2.1.25.dfsg1-6) unstable; urgency=low
+
+  * Fix failures when the host have broken hostname (Closes: #683555)
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 26 Oct 2012 14:06:11 +0200
+
+cyrus-sasl2 (2.1.25.dfsg1-5) unstable; urgency=low
+
+  * New sourceful upload (Closes: #676914)
+  * Relabel /run directory for SE Linux (Closes: #677685)
+  * Add a NEWS file about auxprop_plugin mysql->sql change
+    (Closes: #680476)
+  * Improve documentation on LDAP_SASLAUTHD file (Closes: #671015)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 06 Aug 2012 13:34:27 +0200
+
+cyrus-sasl2 (2.1.25.dfsg1-4) unstable; urgency=medium
+
+  [ Ondřej Surý ]
+  * Lintian says we need debhelper >= 9, so we need debhelper >= 9
+
+  [ Helmut Grohne ]
+  * Breaks: slapd < 2.4.25-4 (Closes: #655845)
+  * Introduce shlib dependency on 2.1.24 for libsasl2-2. (Closes:
+    #628237)
+
+ -- Ondřej Surý <ondrej@debian.org>  Sun, 04 Mar 2012 09:30:55 +0100
+
+cyrus-sasl2 (2.1.25.dfsg1-3) unstable; urgency=low
+
+  [ Thomas Preud'homme ]
+  * Stop relying on the structure of debugging package
+    (Closes: #653725).
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 18 Jan 2012 08:47:04 +0100
+
+cyrus-sasl2 (2.1.25.dfsg1-2) unstable; urgency=low
+
+  [ Roberto C. Sanchez ]  
+  * Update README.source to reflect quilt usage instead of dpatch
+
+  [ Ondřej Surý ]
+  * Fix missing pam library due MultiArch (Closes: #643331)
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 27 Sep 2011 13:00:26 +0200
+
+cyrus-sasl2 (2.1.25.dfsg1-1) unstable; urgency=low
+
+  * Imported Upstream version 2.1.25.dfsg1
+  * Refresh patches to the new release
+  * sasldbconverter2.8 man page was removed from upstream tarball
+  * Adapt debian/rules to SONAME change
+  * Fix FTBFS with MultiArch heimdal libraries (Closes: #642681)
+  * Add Catalan translation (Closes: #641826)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 26 Sep 2011 10:08:32 +0200
+
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-6) unstable; urgency=low
+
+  * Add Breaks: postfix (<= 2.8.3-1) so it doesn't get upgraded until
+    postfix sasl code is ready for MultiArch
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 17 Aug 2011 16:03:29 +0200
+
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-5) unstable; urgency=low
+
+  * Add MultiArch support (Courtesy of Steve Langasek) (Closes: #637968)
+  * Add both patch(es) to fix authentication issue with dovecot
+    (Closes: #635246)
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 16 Aug 2011 09:43:32 +0200
+
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-4) unstable; urgency=low
+
+  * Fix yet another upstream segfault breakage in GSSAPI from CVS
+    (Closes: #629589)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 08 Jun 2011 08:37:13 +0200
+
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-3) unstable; urgency=low
+
+  [ Dan White ]
+  * Fix GSSAPI breakage by reverting revision 1.103 of plugins/gssapi.c
+    (Closes: #628525)
+
+ -- Ondřej Surý <ondrej@debian.org>  Tue, 07 Jun 2011 11:14:18 +0200
+
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-2) unstable; urgency=low
+
+  * Upload to unstable
+  * One more AC_CACHE_VAL without _cv_ fix
+  * Update Vcs-* links
+  * Add gs2 and scram modules to libsasl2-modules-gssapi-mit
+    (Closes: #628067)
+  * Revert "Change gbp.conf for experimental branch"
+  * Add lintian-override for libsasl2-modules-gssapi-mit: possible-gpl-
+    code-linked-with-openssl
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 27 May 2011 17:05:30 +0200
+
+cyrus-sasl2 (2.1.24~rc1.dfsg1+cvs2011-05-23-1) experimental; urgency=low
+
+  * Imported Upstream version 2.1.24~rc1.dfsg1+cvs2011-05-23
+  * Adapt patches to new CVS checkout
+  * Upload to experimental first to be sure everything works
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 26 May 2011 10:38:59 +0200
+
+cyrus-sasl2 (2.1.24~rc1.dfsg1-1) unstable; urgency=low
+
+  [ Roberto C. Sanchez ]
+  * libsasl2-2.README.Debian: document that SASL logs debug messages by
+    default, and how change/stop it (Closes: #590598)
+  * Bump Standards-Version to 3.9.2 (no changes)
+  * Remove Build-Depends on libopie-dev, which was removed
+    (Closes: #622221)
+
+  [ Ondřej Surý ]
+  * Patch to support newer Berkeley DB (Closes: #621437)
+  * Remove /etc/sasldb2 in prerm remove if empty (Closes: #618885)
+  * Improve Berkeley DB upgrade code to note the used version in
+    berkeley_db.active file and compare it with current version
+  * Convert debian/rules to debhelper7
+  * Update Vcs-* and Homepage fields
+  * Fix autoreconf by adding some recommended options to configure.in
+    and Makefile.am
+  * Imported Upstream version 2.1.24~rc1.dfsg1
+  * Update patches to new release
+  * Update repack.sh
+  * Build against sqlite3 since upstream has a support for it
+    (Closes: #444799)
+  * Fix FTBFS in LDAP plugin
+  * Don't use .la files to open plugins, just scan .so
+  * Set configdir to /etc/sasl2:/etc/sasl:/usr/lib/sasl2
+    (Closes: #465569)
+  * Stop shipping .la and .a files for all modules (Closes: #516833)
+  * sasl2-bin can depend on generic db-util package now
+  * Add myself to uploaders
+  * Removed hardcoded -R option when searching for sqlite libraries
+  * Fix Sqlite3 FTBFS due missing link libraries in plugins/
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 25 May 2011 21:57:11 +0200
+
+cyrus-sasl2 (2.1.23.dfsg1-8) unstable; urgency=low
+
+  * Eliminate getsubopt conflict when building with glibc 2.2, thanks to
+    Colin Watson for the patch (Closes: #588528)
+  * Convert package from using dpatch to using quilt
+  * debian/sasl2-bin.saslauthd.init: Properly handle $(OPTIONS) missing from
+    defaults file (Closes: #515534)
+  * Bump Standards-Version to 3.9.1 (no changes)
+  * cyrus-sasl2-dbg: Demote dependency on cyrus-sasl2-{mit,heimdal}-dbg to
+    a recommendation (Closes: #607558)
+  * Enable hardening features (Closes: #542725)
+  * Fix FTBFS, add $(SASL_DB_LIB) as dependency to libsasldb, and use it.
+    Thanks to Matthias Klose for the patch (Closes: #609237)
+  * Drop gratuitous dependency on krb5support (Closes: #528238)
+  * Ship docs on testing with sasl-sample-{client,server} (Closes: #516542)
+  * Allow getting saslauthd status with '/etc/init.d/saslauthd status'.
+    Thanks to Raoul Bhatia for the patch (Closes: #589181)
+  * Fix documentation on saslauthd runtime directory perms (Closes: #528554)
+  * Add Danish translation, thanks to Joe Dalton.  (Closes: #585553)
+  * Change to machine readable copyright file (Closes: 470948)
+  * Improve documentation on location of socket directory based on whether
+    Postfix runs inside or outside a chroot, thanks to Walter Rohrer for the
+    suggestion.  (Closes: #528553)
+  * Start shipping gen-auth (Closes: #459624)
+  * Switch to dpkg-source 3.0 (quilt) format.
+  * Drop Conflicts/Replaces for pre-Lenny and pre-Sarge versions of packages
+
+ -- Roberto C. Sanchez <roberto@connexer.com>  Wed, 16 Mar 2011 22:42:49 -0400
+
 cyrus-sasl2 (2.1.23.dfsg1-7) unstable; urgency=low
 
   [ Luca Capello ]

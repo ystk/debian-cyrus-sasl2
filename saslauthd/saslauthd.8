@@ -37,7 +37,7 @@ DDEESSCCRRIIPPTTIIOONN
 
      --HH _h_o_s_t_n_a_m_e
              The remote host to be contacted by the rimap authentication mech-
-             anism. (Depricated, use -O instead)
+             anism. (Deprecated, use -O instead)
 
      --mm _p_a_t_h
              Use _p_a_t_h as the pathname to the named socket to listen on for
@@ -51,7 +51,7 @@ DDEESSCCRRIIPPTTIIOONN
              Use _t_h_r_e_a_d_s processes for responding to authentication queries.
              (default: 5)  A value of zero will indicate that saslauthd should
              fork an individual process for each connection.  This can solve
-             leaks that occur in some deployments..
+             leaks that occur in some deployments.
 
      --ss _s_i_z_e
              Use _s_i_z_e as the table size of the hash table (in kilobytes)
@@ -64,7 +64,7 @@ DDEESSCCRRIIPPTTIIOONN
 
      --hh      Show usage information
 
-     --cc      Enable cacheing of authentication credentials
+     --cc      Enable caching of authentication credentials
 
      --ll      Disable the use of a lock file for controlling access to
              accept().
@@ -72,7 +72,7 @@ DDEESSCCRRIIPPTTIIOONN
      --rr      Combine the realm with the login (with an ’@’ sign in between).
              e.g.  login: "foo" realm: "bar" will get passed as login:
              "foo@bar".  Note that the realm will still be passed, which may
-             lead to unexpected behavior.
+             lead to unexpected behaviour.
 
      --vv      Print the version number and available authentication mechanisms
              on standard error, then exit.
@@ -80,7 +80,7 @@ DDEESSCCRRIIPPTTIIOONN
      --dd      Debugging mode.
 
    LLooggggiinngg
-     ssaassllaauutthhdd logs it’s activities via ssyyssllooggdd using the LOG_AUTH facility.
+     ssaassllaauutthhdd logs its activities via ssyyssllooggdd using the LOG_AUTH facility.
 
 AAUUTTHHEENNTTIICCAATTIIOONN MMEECCHHAANNIISSMMSS
      ssaassllaauutthhdd supports one or more "authentication mechanisms", dependent
@@ -96,7 +96,7 @@ AAUUTTHHEENNTTIICCAATTIIOONN MMEECCHHAANNIISSMMSS
 
                 Authenticate using the ggeettppwweenntt() library function. Typically
                 this authenticates against the local password file. See your
-                systems getpwent(3) man page for details.
+                system’s getpwent(3) man page for details.
 
      kerberos4  _(_A_l_l _p_l_a_t_f_o_r_m_s_)
 
@@ -145,8 +145,8 @@ AAUUTTHHEENNTTIICCAATTIIOONN MMEECCHHAANNIISSMMSS
      sasldb     _(_A_l_l _p_l_a_t_f_o_r_m_s_)
 
                 Authenticate against the SASL authentication database.  Note
-                that this is probabally not what you want to be using, and is
-                even disabled at compile-time by default.  If you want to use
+                that this is probably not what you want to use, and is even
+                disabled at compile-time by default.  If you want to use
                 sasldb with the SASL library, you probably want to use the
                 pwcheck_method of "auxprop" along with the sasldb auxprop plu-
                 gin instead.

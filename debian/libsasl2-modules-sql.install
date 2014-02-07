@@ -1,1 +1,1 @@
-usr/lib/sasl2/libsql.*
+usr/lib/*/sasl2/libsql.so*

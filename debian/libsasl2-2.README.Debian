@@ -20,6 +20,21 @@ not allow any users to log in, and other SASL apps will malfuntion in weird
 ways. If you do not intend to use SASL on your server, then the
 libsasl2-modules* packages are not necessary for you.
 
+SASL automatically logs debug information to syslog's auth.debug facility.
+This is not something that can be disabled through a configuration option to
+libsasl2-2 itself.  The default syslog configurations in Debian result in these
+messages going to /var/log/syslog and /var/log/auth.log.  If you wish to send
+the SASL debug messages elsewhere, you can add a line like this:
+
+    auth.debug /var/log/auth.debug
+
+To throw the messages away:
+
+    auth.debug /dev/null
+
+Additional information can be found here:
+http://www.cyrusimap.org/docs/cyrus-imapd/2.4.8/install-configure.php
+
 SASL uses /dev/urandom, which doesn't block when the system runs out of
 entropy. However, when the system does run out of entropy, the random numbers
 that /dev/urandom emits are slightly less cryptographically secure. If you are

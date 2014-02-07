@@ -19,43 +19,17 @@ trap "rm -rf $TMPDIR" QUIT INT EXIT
 
 echo "Repackaging $OPT_FILE"
 
-tar xzf $OPT_FILE -C $TMPDIR
-
-orig_file_path=`readlink --canonicalize $OPT_FILE`
-upstream_directory=`ls -1 $TMPDIR | head -1`
-package_name=`dpkg-parsechangelog | sed -n 's/^Source: //p'`
+orig_file_path=$(readlink --canonicalize $OPT_FILE)
+package_name=$(dpkg-parsechangelog | sed -n 's/^Source: //p')
 dfsg_directory=${package_name}_${OPT_VERSION}.dfsg1
-dfsg_file_path=`dirname $orig_file_path`/$dfsg_directory.orig.tar.gz
+dfsg_file_path=$(dirname ${orig_file_path})/${dfsg_directory}.orig.tar.gz
 
-# Use a subshell to remove the non-dfsg-free files
-(
-        set -e
-        set -u
-
-        cd $TMPDIR/$upstream_directory
-
-        # Individual files to remove
-        for file in \
-                doc/draft* \
-                doc/rfc* \
-                java/doc/draft* ; do
-                rm -v $file
-        done
-
-        # Whole directories to remove
-        for directory in \
-                dlcompat-20010505 ; do
-                rm -rfv $directory
-        done
-)
-
-# Rename upstream tarball root directory and repackage the file
-(
-        cd $TMPDIR
-        mv $upstream_directory $dfsg_directory
-        tar czf $orig_file_path *
-        mv $orig_file_path $dfsg_file_path
-)
+zcat "${orig_file_path}" | \
+tar --wildcards \
+    --delete '*/dlcompat-20010505/*' \
+    --delete '*rfc*.txt' \
+    --delete '*draft-*.txt' \
+    --delete '*~' | \
+gzip -c > $dfsg_file_path
 
 echo "File $OPT_FILE repackaged successfully to $dfsg_file_path"
-

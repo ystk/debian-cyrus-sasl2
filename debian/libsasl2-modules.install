@@ -1,6 +1,6 @@
-usr/lib/sasl2/libanonymous.*
-usr/lib/sasl2/libcrammd5.*
-usr/lib/sasl2/libdigestmd5.*
-usr/lib/sasl2/liblogin.*
-usr/lib/sasl2/libntlm.*
-usr/lib/sasl2/libplain.*
+usr/lib/*/sasl2/libanonymous.so*
+usr/lib/*/sasl2/libcrammd5.so*
+usr/lib/*/sasl2/libdigestmd5.so*
+usr/lib/*/sasl2/liblogin.so*
+usr/lib/*/sasl2/libntlm.so*
+usr/lib/*/sasl2/libplain.so*

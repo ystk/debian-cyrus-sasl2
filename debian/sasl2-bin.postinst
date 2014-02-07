@@ -22,15 +22,28 @@ case "$1" in
 		#  2.1.22.dfsg1-17 (db4.4 -> db4.6)
 		#  2.1.22.dfsg1-24 (db4.6 -> db4.7)
 		#  2.1.23.dfsg1-4 (db4.7 -> db4.8)
-		if dpkg --compare-versions "$2" "lt-nl" 2.1.23.dfsg1-4; then
-			
-			# If the database contains no users, just wipe it out,
-			# it will be recreated later in the current format
-			if [ -e $SASLDB_FILE ] && \
-				[ `sasldblistusers2 | wc -l` -eq 0 ]; then
-				rm $SASLDB_FILE
-			elif [ -e $SASLDB_FILE ]; then
+		#  2.1.23.dfsg1-8 (db4.8 -> db5.1)
+
+		if [ -r /usr/lib/sasl2/berkeley_db.active ]; then
+			OLD_BDB=$(cat /usr/lib/sasl2/berkeley_db.active)
+		else
+			if dpkg --compare-versions "$2" "lt-nl" 2.1.23.dfsg1-4; then
+				OLD_BDB=4.7
+			elif dpkg --compare-versions "$2" "lt-nl" 2.1.23.dfsg1-9; then
+				OLD_BDB=4.8
+			fi
+		fi
+		
+		# Read the compiled-in Berkeley DB version
+		NEW_BDB=$(cat /usr/lib/sasl2/berkeley_db.txt)
+
+		if [ "$OLD_BDB" != "$NEW_BDB" ]; then
+			if [ -e $SASLDB_FILE ]; then
 				# The database exists and has users, begin upgrade procedure
+				#
+				# Well, this code doesn't break anything, but since Cyrus SASL
+				# doesn't use transactional environment and the database format
+				# was not changed since db3 it also doesn't do anything at all
 
 				# Make backup and handle errors
 				db_get cyrus-sasl2/backup-sasldb2
@@ -41,13 +54,16 @@ case "$1" in
 				fi
 
 				# Upgrade SASL database and handle errors
-				if ! db4.8_upgrade $SASLDB_FILE >/dev/null 2>&1; then
+				if ! db${NEW_BDB}_upgrade $SASLDB_FILE >/dev/null 2>&1; then
 					db_input high cyrus-sasl2/upgrade-sasldb2-failed || true
 					db_go || true
 					cp --archive "$RET" $SASLDB_FILE >/dev/null 2>&1
 					exit 1
 				fi
 			fi
+
+			# Note the active Berkeley DB version
+			cp -f /usr/lib/sasl2/berkeley_db.txt /usr/lib/sasl2/berkeley_db.active
 		fi
 
 		# Create a statoverride for the default saslauthd run directory,

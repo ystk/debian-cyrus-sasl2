@@ -230,6 +230,12 @@
 		</variablelist>
 	</refsect1>
 	<refsect1>
+		<title>SEE ALSO</title>
+
+                <para>For additional information, please see
+                  /usr/share/doc/sasl2-bin/testing.txt</para>
+	</refsect1>
+	<refsect1>
 		<title>AUTHOR</title>
 
 		<para>This manual page was written by &dhusername; &dhemail; for

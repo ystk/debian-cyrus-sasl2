@@ -1,6 +1,6 @@
 /* sample-server.c -- sample SASL server
  * Rob Earhart
- * $Id: sample-server.c,v 1.31 2004/10/26 11:14:34 mel Exp $
+ * $Id: sample-server.c,v 1.34 2011/09/01 14:12:18 mel Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -63,6 +63,7 @@ __declspec(dllimport) int getsubopt(char **optionp, const char * const *tokens, 
 # include <netinet/in.h>
 #endif /* WIN32 */
 #include <sasl.h>
+#include <saslplug.h>
 #include <saslutil.h>
 
 #ifndef HAVE_GETSUBOPT
@@ -185,9 +186,9 @@ getpath(void *context __attribute__((unused)),
 
 static sasl_callback_t callbacks[] = {
   {
-    SASL_CB_LOG, &sasl_my_log, NULL
+    SASL_CB_LOG, (sasl_callback_ft)&sasl_my_log, NULL
   }, {
-    SASL_CB_GETPATH, &getpath, NULL
+    SASL_CB_GETPATH, (sasl_callback_ft)&getpath, NULL
   }, {
     SASL_CB_LIST_END, NULL, NULL
   }
@@ -254,12 +255,19 @@ samp_recv()
   unsigned len;
   int result;
   
-  if (! fgets(buf, SAMPLE_SEC_BUF_SIZE, stdin))
+  if (! fgets(buf, SAMPLE_SEC_BUF_SIZE, stdin)) {
     fail("Unable to parse input");
+  }
 
-  if (strncmp(buf, "C: ", 3)!=0)
+  if (strncmp(buf, "C: ", 3) != 0) {
     fail("Line must start with 'C: '");
+  }
     
+  len = strlen(buf);
+  if (len > 0 && buf[len-1] == '\n') {
+      buf[len-1] = '\0';
+  }
+
   result = sasl_decode64(buf + 3, (unsigned) strlen(buf + 3), buf,
 			 SAMPLE_SEC_BUF_SIZE, &len);
   if (result != SASL_OK)
@@ -549,7 +557,7 @@ main(int argc, char *argv[])
   if (strlen(buf) < len) {
     /* Hmm, there's an initial response here */
     data = buf + strlen(buf) + 1;
-    len = len - strlen(buf) - 1;
+    len = len - (unsigned) strlen(buf) - 1;
   } else {
     data = NULL;
     len = 0;

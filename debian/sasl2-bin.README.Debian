@@ -19,12 +19,18 @@ Using a single saslauthd instance with Postfix or another chrooted server:
  These steps ensure that the Debian subsystems know how you want things to be
  laid out.
 
+ To know if your Postfix is running chroot, check /etc/postfix/master.cf.
+ If it has the line "smtp inet n - y - - smtpd" or "smtp inet n - - - - smtpd"
+ then your Postfix is running in a chroot.
+ If it has the line "smtp inet n - n - - smtpd" then your Postfix is NOT
+ running in a chroot.
+
  To place the saslauthd socket inside the Postfix chroot, edit
  /etc/default/saslauthd and set OPTIONS like this (you may omit -c):
   OPTIONS="-c -m /var/spool/postfix/var/run/saslauthd"
  
  To set the run directory using dpkg-statoverride, run this command as root:
-  dpkg-statoverride --add root sasl 710 /var/spool/postfix/var/run/saslauthd
+  dpkg-statoverride --add root sasl 750 /var/spool/postfix/var/run/saslauthd
 
  Finally, to add the postfix user to the sasl group:
   adduser postfix sasl
@@ -91,7 +97,7 @@ Running multiple instances of saslauthd:
 
  2. You must also create a statoverride entry to tell the init script
  which permissions you want for the run directory. Example:
-  dpkg-statoverride --add root sasl 710 /var/spool/postfix/var/run/saslauthd
+  dpkg-statoverride --add root sasl 750 /var/spool/postfix/var/run/saslauthd
 
  The init script will ensure that the directory exists, and create it with the
  proper permissions if it doesn't. Note that the directory MUST match what you

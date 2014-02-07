@@ -1,5 +1,5 @@
 /* sasldblistusers.c -- list users in sasldb
- * $Id: sasldblistusers.c,v 1.22 2003/10/03 20:30:14 rjs3 Exp $
+ * $Id: sasldblistusers.c,v 1.24 2011/09/01 14:12:18 mel Exp $
  * Rob Siemborski
  * Tim Martin
  */
@@ -76,7 +76,7 @@ int good_getopt(void *context __attribute__((unused)),
     if (sasldb_path && !strcmp(option, "sasldb_path")) {
 	*result = sasldb_path;
 	if (len)
-	    *len = strlen(sasldb_path);
+	    *len = (unsigned) strlen(sasldb_path);
 	return SASL_OK;
     }
 
@@ -84,7 +84,7 @@ int good_getopt(void *context __attribute__((unused)),
 }
 
 static struct sasl_callback goodsasl_cb[] = {
-    { SASL_CB_GETOPT, &good_getopt, NULL },
+    { SASL_CB_GETOPT, (sasl_callback_ft)&good_getopt, NULL },
     { SASL_CB_LIST_END, NULL, NULL }
 };
 

@@ -1,1 +1,1 @@
-usr/lib/sasl2/libotp.*
+usr/lib/*/sasl2/libotp.so*
