@@ -1,7 +1,7 @@
 /* saslint.h - internal SASL library definitions
  * Rob Siemborski
  * Tim Martin
- * $Id: saslint.h,v 1.60 2006/04/18 20:25:45 mel Exp $
+ * $Id: saslint.h,v 1.73 2011/09/01 14:12:53 mel Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -51,6 +51,15 @@
 #include "saslplug.h"
 #include "saslutil.h"
 #include "prop.h"
+
+#ifndef INLINE
+#if defined (WIN32)
+/* Visual Studio: "inline" keyword is not available in C, only in C++ */
+#define INLINE __inline
+#else
+#define INLINE  inline
+#endif
+#endif
 
 /* #define'd constants */
 #define CANON_BUF_SIZE 1024
@@ -200,8 +209,8 @@ typedef struct mech_list {
   const sasl_utils_t *utils;  /* gotten from plug_init */
 
   void *mutex;            /* mutex for this data */ 
-  mechanism_t *mech_list; /* list of mechanisms */
-  int mech_length;       /* number of mechanisms */
+  mechanism_t *mech_list; /* list of loaded mechanisms */
+  int mech_length;        /* number of loaded mechanisms */
 } mech_list_t;
 
 typedef struct context_list 
@@ -223,6 +232,8 @@ typedef struct sasl_server_conn {
     mechanism_t *mech; /* mechanism trying to use */
     sasl_server_params_t *sparams;
     context_list_t *mech_contexts;
+    mechanism_t *mech_list; /* list of available mechanisms */
+    int mech_length;        /* number of available mechanisms */
 } sasl_server_conn_t;
 
 /* Client Conn Type Information */
@@ -250,6 +261,8 @@ typedef struct sasl_client_conn {
 
   char *clientFQDN;
 
+  cmechanism_t *mech_list; /* list of available mechanisms */
+  int mech_length;	   /* number of available mechanisms */
 } sasl_client_conn_t;
 
 typedef struct sasl_allocation_utils {
@@ -300,6 +313,14 @@ extern int (*_sasl_server_cleanup_hook)(void);
 
 extern sasl_allocation_utils_t _sasl_allocation_utils;
 extern sasl_mutex_utils_t _sasl_mutex_utils;
+extern int _sasl_allocation_locked;
+
+void sasl_common_done(void);
+
+extern int _sasl_is_equal_mech(const char *req_mech,
+                               const char *plug_mech,
+                               size_t req_mech_len,
+                               int *plus);
 
 /*
  * checkpw.c
@@ -349,7 +370,6 @@ extern int _sasl_locate_entry(void *library, const char *entryname,
                               void **entry_point);
 extern int _sasl_done_with_plugins();
 
-
 /*
  * common.c
  */
@@ -384,7 +404,7 @@ extern int _sasl_free_utils(const sasl_utils_t ** utils);
 extern int
 _sasl_getcallback(sasl_conn_t * conn,
 		  unsigned long callbackid,
-		  int (**pproc)(),
+		  sasl_callback_ft * pproc,
 		  void **pcontext);
 
 extern void
@@ -451,7 +471,6 @@ sasl_string_list_t *_sasl_server_mechs(void);
 /*
  * config file declarations (config.c)
  */
-extern int sasl_config_init(const char *filename);
 extern const char *sasl_config_getstring(const char *key,const char *def);
 
 /* checkpw.c */
@@ -463,7 +482,7 @@ extern int _sasl_auxprop_verify_apop(sasl_conn_t *conn,
 				     const char *user_realm);
 #endif /* DO_SASL_CHECKAPOP */
 
-/* Auxprop Plugin (checkpw.c) */
+/* Auxprop Plugin (sasldb.c) */
 extern int sasldb_auxprop_plug_init(const sasl_utils_t *utils,
 				    int max_version,
 				    int *out_version,
@@ -475,7 +494,7 @@ extern int sasldb_auxprop_plug_init(const sasl_utils_t *utils,
  */
 extern int _sasl_auxprop_add_plugin(void *p, void *library);
 extern void _sasl_auxprop_free(void);
-extern void _sasl_auxprop_lookup(sasl_server_params_t *sparams,
+extern int _sasl_auxprop_lookup(sasl_server_params_t *sparams,
 				 unsigned flags,
 				 const char *user, unsigned ulen);
 
@@ -489,8 +508,23 @@ extern int internal_canonuser_init(const sasl_utils_t *utils,
 				   sasl_canonuser_plug_t **plug,
 				   const char *plugname);
 extern int _sasl_canon_user(sasl_conn_t *conn,
-			    const char *user, unsigned ulen,
+			    const char *user,
+			    unsigned ulen,
 			    unsigned flags,
 			    sasl_out_params_t *oparams);
+int _sasl_canon_user_lookup (sasl_conn_t *conn,
+			     const char *user,
+			     unsigned ulen,
+			     unsigned flags,
+			     sasl_out_params_t *oparams);
+
+/*
+ * saslutil.c
+ */
+int get_fqhostname(
+  char *name,  
+  int namelen,
+  int abort_if_no_fqdn
+  );
 
 #endif /* SASLINT_H */

@@ -1,7 +1,7 @@
 /* testsuite.c -- Stress the library a little
  * Rob Siemborski
  * Tim Martin
- * $Id: testsuite.c,v 1.46 2006/04/25 14:39:04 mel Exp $
+ * $Id: testsuite.c,v 1.48 2011/09/01 14:12:18 mel Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -63,11 +63,9 @@
 #include <stdlib.h>
 
 #include <sasl.h>
+#include <saslplug.h>
 #include <saslutil.h>
 #include <prop.h>
-#include <md5global.h>
-#include <md5.h>
-#include <hmac-md5.h>
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -206,13 +204,13 @@ int test_getsimple(void *context __attribute__((unused)), int id,
 /* callbacks we support */
 static sasl_callback_t client_callbacks[] = {
   {
-    SASL_CB_GETREALM, test_getrealm, NULL
+    SASL_CB_GETREALM, (sasl_callback_ft)test_getrealm, NULL
   }, {
-    SASL_CB_USER, test_getsimple, NULL
+    SASL_CB_USER, (sasl_callback_ft)test_getsimple, NULL
   }, {
-    SASL_CB_AUTHNAME, test_getsimple, NULL
+    SASL_CB_AUTHNAME, (sasl_callback_ft)test_getsimple, NULL
   }, {
-    SASL_CB_PASS, test_getsecret, NULL    
+    SASL_CB_PASS, (sasl_callback_ft)test_getsecret, NULL    
   }, {
     SASL_CB_LIST_END, NULL, NULL
   }
@@ -247,7 +245,7 @@ void *test_malloc(size_t size)
     out = malloc(size);
 
     if(DETAILED_MEMORY_DEBUGGING)
-	fprintf(stderr, "  %X = malloc(%u)\n", (unsigned)out, (unsigned) size);
+	fprintf(stderr, "  %p = malloc(%u)\n", out, (unsigned) size);
     
     if(out) {
 	new_data = malloc(sizeof(mem_info_t));
@@ -270,8 +268,8 @@ void *test_realloc(void *ptr, size_t size)
     out = realloc(ptr, size);
     
     if(DETAILED_MEMORY_DEBUGGING)
-	fprintf(stderr, "  %X = realloc(%X,%d)\n",
-		(unsigned)out, (unsigned)ptr, size);
+	fprintf(stderr, "  %p = realloc(%p,%d)\n",
+		out, ptr, size);
 
     prev = &head; cur = head;
     
@@ -310,8 +308,8 @@ void *test_calloc(size_t nmemb, size_t size)
     out = calloc(nmemb, size);
 
     if(DETAILED_MEMORY_DEBUGGING)    
-	fprintf(stderr, "  %X = calloc(%d, %d)\n",
-		(unsigned)out, nmemb, size);
+	fprintf(stderr, "  %p = calloc(%d, %d)\n",
+		out, nmemb, size);
 
     if(out) {
 	new_data = malloc(sizeof(mem_info_t));
@@ -332,8 +330,8 @@ void test_free(void *ptr)
     mem_info_t **prev, *cur;
 
     if(DETAILED_MEMORY_DEBUGGING)
-	fprintf(stderr, "  free(%X)\n",
-		(unsigned)ptr);
+	fprintf(stderr, "  free(%p)\n",
+		ptr);
 
     prev = &head; cur = head;
     
@@ -372,7 +370,7 @@ int mem_stat()
     
     fprintf(stderr, "  Currently Still Allocated:\n");
     for(cur = head; cur; cur = cur->next) {
-	fprintf(stderr, "    %X (%5d)\t", (unsigned)cur->addr, cur->size);
+	fprintf(stderr, "    %p (%5d)\t", cur->addr, cur->size);
 	for(data = (unsigned char *) cur->addr,
 		n = 0; n < (cur->size > 12 ? 12 : cur->size); n++) {
 	    if (isprint((int) data[n]))
@@ -479,7 +477,7 @@ int good_getopt(void *context __attribute__((unused)),
 }
 
 static struct sasl_callback goodsasl_cb[] = {
-    { SASL_CB_GETOPT, &good_getopt, NULL },
+    { SASL_CB_GETOPT, (sasl_callback_ft)&good_getopt, NULL },
     { SASL_CB_LIST_END, NULL, NULL }
 };
 
@@ -497,7 +495,7 @@ int givebadpath(void * context __attribute__((unused)),
 }
 
 static struct sasl_callback withbadpathsasl_cb[] = {
-    { SASL_CB_GETPATH, &givebadpath, NULL },
+    { SASL_CB_GETPATH, (sasl_callback_ft)&givebadpath, NULL },
     { SASL_CB_LIST_END, NULL, NULL }
 };
 
@@ -510,7 +508,7 @@ int giveokpath(void * context __attribute__((unused)),
 }
 
 static struct sasl_callback withokpathsasl_cb[] = {
-    { SASL_CB_GETPATH, &giveokpath, NULL },
+    { SASL_CB_GETPATH, (sasl_callback_ft)&giveokpath, NULL },
     { SASL_CB_LIST_END, NULL, NULL }
 };
 
@@ -543,8 +541,8 @@ static int proxy_authproc(sasl_conn_t *conn,
 }
 
 static struct sasl_callback goodsaslproxy_cb[] = {
-    { SASL_CB_PROXY_POLICY, &proxy_authproc, NULL },
-    { SASL_CB_GETOPT, &good_getopt, NULL },
+    { SASL_CB_PROXY_POLICY, (sasl_callback_ft)&proxy_authproc, NULL },
+    { SASL_CB_GETOPT, (sasl_callback_ft)&good_getopt, NULL },
     { SASL_CB_LIST_END, NULL, NULL }
 };
 
@@ -705,8 +703,9 @@ void test_listmech(void)
     sasl_conn_t *saslconn, *cconn;
     int result;
     const char *str = NULL;
-    unsigned int plen;
-    unsigned lup, flag, pcount;
+    unsigned plen;
+    unsigned lup, flag;
+    int pcount;
     const char **list;
 
     /* test without initializing library */
@@ -928,7 +927,7 @@ void test_random(void)
     
     for (lup=0;lup<(int) sizeof(buf);lup++)
     {
-	buf[lup] = (rand() % 256);	
+	buf[lup] = (char) (rand() % 256);	
     }
     sasl_randseed(rpool, buf, sizeof(buf));
     sasl_churn(rpool, buf, sizeof(buf));

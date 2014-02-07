@@ -189,6 +189,8 @@ extern "C" {
 #define CyrusSasl_SaslException_serialVersionUID -3042686055658047285LL
 #undef CyrusSasl_SaslException_serialVersionUID
 #define CyrusSasl_SaslException_serialVersionUID -3387516993124229948LL
+#undef CyrusSasl_SaslException_serialVersionUID
+#define CyrusSasl_SaslException_serialVersionUID 7818375828146090155LL
 #ifdef __cplusplus
 }
 #endif
