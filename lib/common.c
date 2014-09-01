@@ -1,7 +1,7 @@
 /* common.c - Functions that are common to server and clinet
  * Rob Siemborski
  * Tim Martin
- * $Id: common.c,v 1.133 2011/09/01 14:12:53 mel Exp $
+ * $Id: common.c,v 1.134 2011/09/22 14:40:30 mel Exp $
  */
 /* 
  * Copyright (c) 1998-2003 Carnegie Mellon University.  All rights reserved.
@@ -89,7 +89,7 @@ static char * _sasl_get_default_win_path(void *context __attribute__((unused)),
 static const char build_ident[] = "$Build: libsasl " PACKAGE "-" VERSION " $";
 
 /* It turns out to be convenient to have a shared sasl_utils_t */
-LIBSASL_VAR const sasl_utils_t *sasl_global_utils = NULL;
+const sasl_utils_t *sasl_global_utils = NULL;
 
 /* Should be a null-terminated array that lists the available mechanisms */
 static char **global_mech_list = NULL;
@@ -842,7 +842,11 @@ void sasl_dispose(sasl_conn_t **pconn)
   if (result!=SASL_OK) return;
   
   /* *pconn might have become NULL by now */
-  if (! (*pconn)) return;
+  if (! (*pconn))
+  {
+	sasl_MUTEX_UNLOCK(free_mutex);
+	return;
+  }
 
   (*pconn)->destroy_conn(*pconn);
   sasl_FREE(*pconn);

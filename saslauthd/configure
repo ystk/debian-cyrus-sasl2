@@ -2478,7 +2478,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=saslauthd
- VERSION=2.1.25
+ VERSION=2.1.26
 
 
 cat >>confdefs.h <<_ACEOF
@@ -9626,6 +9626,93 @@ done
 
   LIBS="$cmu_save_LIBS"
 
+  cmu_save_LIBS="$LIBS"
+  LIBS="$LIBS $GSSAPIBASE_LIBS"
+  { $as_echo "$as_me:$LINENO: checking for SPNEGO support in GSSAPI libraries" >&5
+$as_echo_n "checking for SPNEGO support in GSSAPI libraries... " >&6; }
+  if test "$cross_compiling" = yes; then
+  { { $as_echo "$as_me:$LINENO: error: in \`$ac_pwd':" >&5
+$as_echo "$as_me: error: in \`$ac_pwd':" >&2;}
+{ { $as_echo "$as_me:$LINENO: error: cannot run test program while cross compiling
+See \`config.log' for more details." >&5
+$as_echo "$as_me: error: cannot run test program while cross compiling
+See \`config.log' for more details." >&2;}
+   { (exit 1); exit 1; }; }; }
+else
+  cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+#ifdef HAVE_GSSAPI_H
+#include <gssapi.h>
+#else
+#include <gssapi/gssapi.h>
+#endif
+
+int main(void)
+{
+    gss_OID_desc spnego_oid = { 6, (void *) "\x2b\x06\x01\x05\x05\x02" };
+    gss_OID_set mech_set;
+    OM_uint32 min_stat;
+    int have_spnego = 0;
+
+    if (gss_indicate_mechs(&min_stat, &mech_set) == GSS_S_COMPLETE) {
+	gss_test_oid_set_member(&min_stat, &spnego_oid, mech_set, &have_spnego);
+	gss_release_oid_set(&min_stat, &mech_set);
+    }
+
+    return (!have_spnego);  // 0 = success, 1 = failure
+}
+
+_ACEOF
+rm -f conftest$ac_exeext
+if { (ac_try="$ac_link"
+case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_link") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } && { ac_try='./conftest$ac_exeext'
+  { (case "(($ac_try" in
+  *\"* | *\`* | *\\*) ac_try_echo=\$ac_try;;
+  *) ac_try_echo=$ac_try;;
+esac
+eval ac_try_echo="\"\$as_me:$LINENO: $ac_try_echo\""
+$as_echo "$ac_try_echo") >&5
+  (eval "$ac_try") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_GSS_SPNEGO /**/
+_ACEOF
+
+	{ $as_echo "$as_me:$LINENO: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  $as_echo "$as_me: program exited with status $ac_status" >&5
+$as_echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+( exit $ac_status )
+{ $as_echo "$as_me:$LINENO: result: no" >&5
+$as_echo "no" >&6; }
+fi
+rm -rf conftest.dSYM
+rm -f core *.core core.conftest.* gmon.out bb.out conftest$ac_exeext conftest.$ac_objext conftest.$ac_ext
+fi
+
+
+  LIBS="$cmu_save_LIBS"
+
 else
   { $as_echo "$as_me:$LINENO: result: disabled" >&5
 $as_echo "disabled" >&6; }
@@ -10071,8 +10158,25 @@ if test "x$ac_cv_header_db_h" = x""yes; then
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in ${with_bdb} db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
-          do
+	    for dbname in ${with_bdb} \
+	        db-5.2 db5.2 db52 \
+	        db-5.1 db5.2 db51 \
+	        db-5.0 db5.2 db50 \
+	        db-4.8 db4.8 db48 \
+	        db-4.7 db4.7 db47 \
+	        db-4.6 db4.6 db46 \
+	        db-4.5 db4.5 db45 \
+	        db-4.4 db4.4 db44 \
+	        db-4.3 db4.3 db43 \
+	        db-4.2 db4.2 db42 \
+	        db-4.1 db4.1 db41 \
+	        db-4.0 db4.0 db40 db-4 db4 \
+	        db-3.3 db3.3 db33 \
+	        db-3.2 db3.2 db32 \
+	        db-3.1 db3.1 db31 \
+	        db-3.0 db3.0 db30 db-3 db3 \
+	        db
+	      do
 	    LIBS="$saved_LIBS -l$dbname"
 	    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -10881,8 +10985,25 @@ if test "x$ac_cv_header_db_h" = x""yes; then
 	fi
 
 	saved_LIBS=$LIBS
-        for dbname in ${with_bdb} db-4.7 db4.7 db47 db-4.6 db4.6 db46 db-4.5 db4.5 db45 db-4.4 db4.4 db44 db-4.3 db4.3 db43 db-4.2 db4.2 db42 db-4.1 db4.1 db41 db-4.0 db4.0 db-4 db40 db4 db-3.3 db3.3 db33 db-3.2 db3.2 db32 db-3.1 db3.1 db31 db-3 db30 db3 db
-          do
+	    for dbname in ${with_bdb} \
+	        db-5.2 db5.2 db52 \
+	        db-5.1 db5.2 db51 \
+	        db-5.0 db5.2 db50 \
+	        db-4.8 db4.8 db48 \
+	        db-4.7 db4.7 db47 \
+	        db-4.6 db4.6 db46 \
+	        db-4.5 db4.5 db45 \
+	        db-4.4 db4.4 db44 \
+	        db-4.3 db4.3 db43 \
+	        db-4.2 db4.2 db42 \
+	        db-4.1 db4.1 db41 \
+	        db-4.0 db4.0 db40 db-4 db4 \
+	        db-3.3 db3.3 db33 \
+	        db-3.2 db3.2 db32 \
+	        db-3.1 db3.1 db31 \
+	        db-3.0 db3.0 db30 db-3 db3 \
+	        db
+	      do
 	    LIBS="$saved_LIBS -l$dbname"
 	    cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
@@ -13195,7 +13316,8 @@ done
 
 
 
-for ac_func in strlcat strlcpy
+
+for ac_func in asprintf strlcat strlcpy
 do
 as_ac_var=`$as_echo "ac_cv_func_$ac_func" | $as_tr_sh`
 { $as_echo "$as_me:$LINENO: checking for $ac_func" >&5

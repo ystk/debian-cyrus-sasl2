@@ -949,8 +949,8 @@ AC_SUBST([am__tar])
 AC_SUBST([am__untar])
 ]) # _AM_PROG_TAR
 
-m4_include([../config/kerberos_v4.m4])
-m4_include([../config/sasldb.m4])
+m4_include([config/kerberos_v4.m4])
+m4_include([config/sasldb.m4])
 m4_include([../cmulocal/berkdb.m4])
 m4_include([../cmulocal/bsd_sockets.m4])
 m4_include([../cmulocal/c-attribute.m4])

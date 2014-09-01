@@ -144,6 +144,9 @@
 /* Define to 1 if you have the `gss_oid_equal' function. */
 #undef HAVE_GSS_OID_EQUAL
 
+/* Define if your GSSAPI implementation supports SPNEGO */
+#undef HAVE_GSS_SPNEGO
+
 /* Define to 1 if you have the `inet_aton' function. */
 #undef HAVE_INET_ATON
 
@@ -383,34 +386,34 @@
 /* The size of `long', as computed by sizeof. */
 #undef SIZEOF_LONG
 
-/* Link ANONYMOUS Staticly */
+/* Link ANONYMOUS Statically */
 #undef STATIC_ANONYMOUS
 
-/* Link CRAM-MD5 Staticly */
+/* Link CRAM-MD5 Statically */
 #undef STATIC_CRAMMD5
 
-/* Link DIGEST-MD5 Staticly */
+/* Link DIGEST-MD5 Statically */
 #undef STATIC_DIGESTMD5
 
-/* Link GSSAPI Staticly */
+/* Link GSSAPI Statically */
 #undef STATIC_GSSAPIV2
 
 /* User KERBEROS_V4 Staticly */
 #undef STATIC_KERBEROS4
 
-/* Link ldapdb plugin Staticly */
+/* Link ldapdb plugin Statically */
 #undef STATIC_LDAPDB
 
-/* Link LOGIN Staticly */
+/* Link LOGIN Statically */
 #undef STATIC_LOGIN
 
-/* Link NTLM Staticly */
+/* Link NTLM Statically */
 #undef STATIC_NTLM
 
-/* Link OTP Staticly */
+/* Link OTP Statically */
 #undef STATIC_OTP
 
-/* Link PASSDSS Staticly */
+/* Link PASSDSS Statically */
 #undef STATIC_PASSDSS
 
 /* Link PLAIN Staticly */
@@ -419,13 +422,13 @@
 /* Link SASLdb Staticly */
 #undef STATIC_SASLDB
 
-/* Link SCRAM Staticly */
+/* Link SCRAM Statically */
 #undef STATIC_SCRAM
 
-/* Link SQL plugin staticly */
+/* Link SQL plugin statically */
 #undef STATIC_SQL
 
-/* Link SRP Staticly */
+/* Link SRP Statically */
 #undef STATIC_SRP
 
 /* Define to 1 if you have the ANSI C header files. */
@@ -434,7 +437,7 @@
 /* Define to 1 if you can safely include both <sys/time.h> and <time.h>. */
 #undef TIME_WITH_SYS_TIME
 
-/* Should we try to dlopen() plugins while staticly compiled? */
+/* Should we try to dlopen() plugins while statically compiled? */
 #undef TRY_DLOPEN_WHEN_STATIC
 
 /* use the doors IPC API for saslauthd? */
@@ -474,7 +477,8 @@
 
 
 /* Create a struct iovec if we need one */
-#if !defined(_WIN32) && !defined(HAVE_SYS_UIO_H)
+#if !defined(_WIN32)
+#if !defined(HAVE_SYS_UIO_H)
 /* (win32 is handled in sasl.h) */
 struct iovec {
     char *iov_base;
@@ -483,6 +487,7 @@ struct iovec {
 #else
 #include <sys/types.h>
 #include <sys/uio.h>
+#endif
 #endif
 
 /* location of the random number generator */
@@ -521,9 +526,10 @@ struct iovec {
 
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #ifndef WIN32
+# include <sys/socket.h>
 # include <netdb.h>
+# include <netinet/in.h>
 # ifdef HAVE_SYS_PARAM_H
 #  include <sys/param.h>
 # endif
@@ -532,13 +538,11 @@ struct iovec {
 #endif /* WIN32 */
 #include <string.h>
 
-#include <netinet/in.h>
-
 #ifndef HAVE_SOCKLEN_T
 typedef unsigned int socklen_t;
 #endif /* HAVE_SOCKLEN_T */
 
-#ifndef HAVE_STRUCT_SOCKADDR_STORAGE
+#if !defined(HAVE_STRUCT_SOCKADDR_STORAGE) && !defined(WIN32)
 #define	_SS_MAXSIZE	128	/* Implementation specific max size */
 #define	_SS_PADSIZE	(_SS_MAXSIZE - sizeof (struct sockaddr))
 
@@ -600,6 +604,18 @@ struct sockaddr_storage {
 
 #ifndef HIER_DELIMITER
 #define HIER_DELIMITER '/'
+#endif
+
+#ifdef WIN32
+#define SASL_ROOT_KEY "SOFTWARE\\Carnegie Mellon\\Project Cyrus\\SASL Library"
+#define SASL_PLUGIN_PATH_ATTR "SearchPath"
+#define SASL_CONF_PATH_ATTR "ConfFile"
+
+#include <windows.h>
+inline static unsigned int sleep(unsigned int seconds) {
+       Sleep(seconds * 1000);
+       return 0;
+}
 #endif
 
 #endif /* CONFIG_H */

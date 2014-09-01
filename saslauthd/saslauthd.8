@@ -72,7 +72,10 @@ DDEESSCCRRIIPPTTIIOONN
      --rr      Combine the realm with the login (with an ’@’ sign in between).
              e.g.  login: "foo" realm: "bar" will get passed as login:
              "foo@bar".  Note that the realm will still be passed, which may
-             lead to unexpected behaviour.
+             lead to unexpected behavior for authentication mechanisms that
+             make use of the realm, however for mechanisms which don’t, such
+             as _g_e_t_p_w_e_n_t, this is the only way to authenticate domain-specific
+             users sharing the same userid.
 
      --vv      Print the version number and available authentication mechanisms
              on standard error, then exit.
@@ -85,8 +88,7 @@ DDEESSCCRRIIPPTTIIOONN
 AAUUTTHHEENNTTIICCAATTIIOONN MMEECCHHAANNIISSMMSS
      ssaassllaauutthhdd supports one or more "authentication mechanisms", dependent
      upon the facilities provided by the underlying operating system.  The
-     mechanism is selected by the --aahhoo flag from the following list of
-     choices:
+     mechanism is selected by the --aa flag from the following list of choices:
 
      dce        _(_A_I_X_)
 
@@ -186,4 +188,4 @@ SSEEEE AALLSSOO
      passwd(1), getpwent(3), getspnam(3), getuserpw(3), sasl_checkpass(3)
      sia_authenticate_user(3),
 
-CMU-SASL                          10 24 2002                          CMU-SASL
+CMU-SASL                          12 12 2005                          CMU-SASL

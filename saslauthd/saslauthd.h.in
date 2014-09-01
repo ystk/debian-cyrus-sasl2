@@ -13,6 +13,9 @@
 /* Define if your getpwnam_r()/getspnam_r() functions take 5 arguments */
 #undef GETXXNAM_R_5ARG
 
+/* Define to 1 if you have the `asprintf' function. */
+#undef HAVE_ASPRINTF
+
 /* Define to 1 if you have the <crypt.h> header file. */
 #undef HAVE_CRYPT_H
 
@@ -76,6 +79,9 @@
 
 /* Define to 1 if you have the `gss_oid_equal' function. */
 #undef HAVE_GSS_OID_EQUAL
+
+/* Define if your GSSAPI implementation supports SPNEGO */
+#undef HAVE_GSS_SPNEGO
 
 /* Include HTTP form Support */
 #undef HAVE_HTTPFORM
@@ -328,6 +334,9 @@ extern size_t saslauthd_strlcpy(char *dst, const char *src, size_t len);
 #ifndef HAVE_STRLCAT
 extern size_t saslauthd_strlcat(char *dst, const char *src, size_t len);
 #define strlcat(x,y,z) saslauthd_strlcat((x),(y),(z))
+#endif
+#ifndef HAVE_ASPRINTF
+extern int asprintf(char **str, const char *fmt, ...);
 #endif
 
 #endif
