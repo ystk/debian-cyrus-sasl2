@@ -13,6 +13,7 @@
 set -e
 
 FALLBACK_RUN_DIR=/var/run/saslauthd
+SASLDB_FILE=/etc/sasldb2
 
 # Debconf hook. We don't rely on debconf being present at this time.
 if [ -e /usr/share/debconf/confmodule ];then
@@ -44,8 +45,12 @@ case "$1" in
 			db_get cyrus-sasl2/purge-sasldb2
 
 			if [ "$RET" = "true" ]; then
-				rm -f /etc/sasldb2
+				rm -f $SASLDB_FILE
 			fi
+		fi
+		if [ ! -e $SASLDB_FILE ]; then
+		    rm -f /usr/lib/sasl2/berkeley_db.active
+		    rmdir --ignore-fail-on-non-empty /usr/lib/sasl2 || true
 		fi
 		;;
 	upgrade|failed-upgrade|disappear)

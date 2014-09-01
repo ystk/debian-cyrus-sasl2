@@ -1,3 +1,4 @@
+
 /* MODULE: auth_rimap */
 
 /* COPYRIGHT
@@ -53,7 +54,7 @@
  * END SYNOPSIS */
 
 #ifdef __GNUC__
-#ident "$Id: auth_rimap.c,v 1.13 2008/01/23 19:54:54 murch Exp $"
+#ident "$Id: auth_rimap.c,v 1.14 2011/09/22 14:39:03 mel Exp $"
 #endif
 
 /* PUBLIC DEPENDENCIES */
@@ -199,7 +200,7 @@ qstring (
 	}
 	*p2++ = *p1++;
     }
-    strcat(p2, "\"");
+    strcpy(p2, "\"");
     return c;
 }
 
@@ -367,6 +368,30 @@ auth_rimap (
     alarm(NETWORK_IO_TIMEOUT);
     rc = read(s, rbuf, sizeof(rbuf));
     alarm(0);
+    if ( rc>0 ) {
+        /* check if there is more to read */
+        fd_set         perm;
+        int            fds, ret;
+        struct timeval timeout;
+
+        FD_ZERO(&perm);
+        FD_SET(s, &perm);
+        fds = s +1;
+
+        timeout.tv_sec  = 1;
+        timeout.tv_usec = 0;
+        while( select (fds, &perm, NULL, NULL, &timeout ) >0 ) {
+           if ( FD_ISSET(s, &perm) ) {
+              ret = read(s, rbuf+rc, sizeof(rbuf)-rc);
+              if ( ret<0 ) {
+                 rc = ret;
+                 break;
+              } else {
+                 rc += ret;
+              }
+           }
+        }
+    }
     if (rc == -1) {
 	syslog(LOG_WARNING, "auth_rimap: read (banner): %m");
 	(void) close(s);
@@ -456,6 +481,30 @@ auth_rimap (
     alarm(NETWORK_IO_TIMEOUT);
     rc = read(s, rbuf, sizeof(rbuf));
     alarm(0);
+    if ( rc>0 ) {
+        /* check if there is more to read */
+        fd_set         perm;
+        int            fds, ret;
+        struct timeval timeout;
+
+        FD_ZERO(&perm);
+        FD_SET(s, &perm);
+        fds = s +1;
+
+        timeout.tv_sec  = 1;
+        timeout.tv_usec = 0;
+        while( select (fds, &perm, NULL, NULL, &timeout ) >0 ) {
+           if ( FD_ISSET(s, &perm) ) {
+              ret = read(s, rbuf+rc, sizeof(rbuf)-rc);
+              if ( ret<0 ) {
+                 rc = ret;
+                 break;
+              } else {
+                 rc += ret;
+              }
+           }
+        }
+    }
     (void) close(s);			/* we're done with the remote */
     if (rc == -1) {
 	syslog(LOG_WARNING, "auth_rimap: read (response): %m");

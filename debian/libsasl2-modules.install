@@ -4,3 +4,4 @@ usr/lib/*/sasl2/libdigestmd5.so*
 usr/lib/*/sasl2/liblogin.so*
 usr/lib/*/sasl2/libntlm.so*
 usr/lib/*/sasl2/libplain.so*
+etc/logcheck/ignore.d.server/libsasl2-modules

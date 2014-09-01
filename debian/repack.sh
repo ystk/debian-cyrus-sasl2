@@ -28,8 +28,7 @@ zcat "${orig_file_path}" | \
 tar --wildcards \
     --delete '*/dlcompat-20010505/*' \
     --delete '*rfc*.txt' \
-    --delete '*draft-*.txt' \
-    --delete '*~' | \
+    --delete '*draft-*.txt' | \
 gzip -c > $dfsg_file_path
 
 echo "File $OPT_FILE repackaged successfully to $dfsg_file_path"

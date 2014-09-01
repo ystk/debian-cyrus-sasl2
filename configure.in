@@ -1,7 +1,7 @@
 dnl configure.in for the SASL library
 dnl Rob Siemborski
 dnl Rob Earhart
-dnl $Id: configure.in,v 1.222 2011/09/07 13:19:44 murch Exp $
+dnl $Id: configure.in,v 1.224 2011/09/22 14:44:15 mel Exp $
 dnl
 dnl Copyright (c) 2001 Carnegie Mellon University.  All rights reserved.
 dnl
@@ -59,7 +59,7 @@ dnl
 dnl REMINDER: When changing the version number here, please also update
 dnl the values in win32/include/config.h and include/sasl.h as well.
 dnl
-AM_INIT_AUTOMAKE(cyrus-sasl, 2.1.25)
+AM_INIT_AUTOMAKE(cyrus-sasl, 2.1.26)
 CMU_INIT_AUTOMAKE
 
 # and include our config dir scripts
@@ -124,7 +124,7 @@ AC_ARG_ENABLE(staticdlopen, [  --enable-staticdlopen   try dynamic plugins when 
                 enable_staticdlopen=no)
 
 if test "$enable_staticdlopen" = yes; then
-  AC_DEFINE(TRY_DLOPEN_WHEN_STATIC,[],[Should we try to dlopen() plugins while staticly compiled?])
+  AC_DEFINE(TRY_DLOPEN_WHEN_STATIC,[],[Should we try to dlopen() plugins while statically compiled?])
 fi
 
 if test "$ac_cv_prog_gcc" = yes; then
@@ -277,8 +277,8 @@ if test "$with_pam" != no; then
   fi
   AC_CHECK_HEADERS(security/pam_appl.h pam/pam_appl.h)
   cmu_save_LIBS="$LIBS"
-  AC_CHECK_FUNC(pam_start, :, 
-	LIBS="-lpam $LIBS" 
+  AC_CHECK_FUNC(pam_start, :,
+	LIBS="-lpam $LIBS"
 	AC_TRY_LINK([[
 #include <sys/types.h>
 #ifdef HAVE_PAM_PAM_APPL_H
@@ -394,7 +394,7 @@ if test "$cram" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS cram.o"
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/cram.c"
-    AC_DEFINE(STATIC_CRAMMD5, [], [Link CRAM-MD5 Staticly])
+    AC_DEFINE(STATIC_CRAMMD5, [], [Link CRAM-MD5 Statically])
   fi
 else
   AC_MSG_RESULT(disabled)
@@ -429,7 +429,7 @@ if test "$digest" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/digestmd5.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS digestmd5.o"
-    AC_DEFINE(STATIC_DIGESTMD5, [], [Link DIGEST-MD5 Staticly])
+    AC_DEFINE(STATIC_DIGESTMD5, [], [Link DIGEST-MD5 Statically])
   fi
 else
   AC_MSG_RESULT(disabled)
@@ -454,7 +454,7 @@ if test "$scram" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/scram.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS scram.o"
-    AC_DEFINE(STATIC_SCRAM, [], [Link SCRAM Staticly])
+    AC_DEFINE(STATIC_SCRAM, [], [Link SCRAM Statically])
   fi
 
   AC_SUBST(SCRAM_LIBS)
@@ -481,7 +481,7 @@ if test "$otp" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/otp.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS otp.o"
-    AC_DEFINE(STATIC_OTP, [], [Link OTP Staticly])
+    AC_DEFINE(STATIC_OTP, [], [Link OTP Statically])
   fi
 
   dnl Test for OPIE
@@ -538,7 +538,7 @@ if test "$srp" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/srp.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS srp.o"
-    AC_DEFINE(STATIC_SRP, [], [Link SRP Staticly])
+    AC_DEFINE(STATIC_SRP, [], [Link SRP Statically])
   fi
 
 dnl srp_setpass support
@@ -564,7 +564,7 @@ SASL_KERBEROS_V4_CHK
 SASL_GSSAPI_CHK
 
 if test "$gssapi" != "no"; then
-  AC_DEFINE(STATIC_GSSAPIV2,[],[Link GSSAPI Staticly])
+  AC_DEFINE(STATIC_GSSAPIV2,[],[Link GSSAPI Statically])
   mutex_default="no"
   if test "$gss_impl" = "mit"; then
      mutex_default="yes"
@@ -594,7 +594,7 @@ if test "$anon" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS anonymous.o"
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/anonymous.c"
-    AC_DEFINE(STATIC_ANONYMOUS, [], [Link ANONYMOUS Staticly])
+    AC_DEFINE(STATIC_ANONYMOUS, [], [Link ANONYMOUS Statically])
   fi
 else
   AC_MSG_RESULT(disabled)
@@ -612,7 +612,7 @@ if test "$login" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/login.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS login.o"
-    AC_DEFINE(STATIC_LOGIN,[],[Link LOGIN Staticly])
+    AC_DEFINE(STATIC_LOGIN,[],[Link LOGIN Statically])
   fi
 else
   AC_MSG_RESULT(disabled)
@@ -638,7 +638,7 @@ if test "$ntlm" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/ntlm.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS ntlm.o"
-    AC_DEFINE(STATIC_NTLM,[],[Link NTLM Staticly])
+    AC_DEFINE(STATIC_NTLM,[],[Link NTLM Statically])
   fi
 else
   AC_MSG_RESULT(disabled)
@@ -664,7 +664,7 @@ if test "$passdss" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS passdss.o"
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/passdss.c"
-    AC_DEFINE(STATIC_PASSDSS,[],[Link PASSDSS Staticly])
+    AC_DEFINE(STATIC_PASSDSS,[],[Link PASSDSS Statically])
   fi
 else
   AC_MSG_RESULT(disabled)
@@ -695,7 +695,7 @@ if test "$sql" != no; then
   if test "$enable_static" = yes; then
     SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/sql.c"
     SASL_STATIC_OBJS="$SASL_STATIC_OBJS sql.o"
-    AC_DEFINE(STATIC_SQL,[],[Link SQL plugin staticly])
+    AC_DEFINE(STATIC_SQL,[],[Link SQL plugin statically])
   fi
 else
   AC_MSG_RESULT(disabled)
@@ -835,7 +835,7 @@ AC_ARG_WITH(sqlite,  [  --with-sqlite=PATH       use SQLite from PATH ],
   with_sqlite=$withval,
   with_sqlite=$sql)
 
-# find location of library 
+# find location of library
 # presuing if one given then correct
 if test "${with_sqlite}" = "yes"; then
   with_sqlite=notfound
@@ -878,7 +878,7 @@ case "$with_sqlite" in
 	   [Do we have SQLite support?]),
            [AC_WARN([SQLite Library sqlite does not work])
 	    with_sqlite=no], $LIB_SQLITE_DIR);;
-         
+
 esac
 AC_SUBST(LIB_SQLITE)
 
@@ -887,7 +887,7 @@ AC_ARG_WITH(sqlite3,  [  --with-sqlite3=PATH       use SQLite3 from PATH ],
   with_sqlite3=$withval,
   with_sqlite3=$sql)
 
-# find location of library 
+# find location of library
 # we assume that if one given then it is correct
 if test "${with_sqlite3}" = "yes"; then
   with_sqlite3=notfound
@@ -930,7 +930,7 @@ case "$with_sqlite3" in
 	   [Do we have SQLite3 support?]),
            [AC_WARN([SQLite3 Library sqlite3 does not work])
 	    with_sqlite3=no], $LIB_SQLITE3_DIR);;
-         
+
 esac
 AC_SUBST(LIB_SQLITE3)
 
@@ -987,7 +987,7 @@ if test "$ldapdb" != no; then
             if test "$enable_static" = yes; then
                 SASL_STATIC_SRCS="$SASL_STATIC_SRCS \$(top_srcdir)/plugins/ldapdb.c"
                 SASL_STATIC_OBJS="$SASL_STATIC_OBJS ldapdb.o"
-                AC_DEFINE(STATIC_LDAPDB,[],[Link ldapdb plugin Staticly])
+                AC_DEFINE(STATIC_LDAPDB,[],[Link ldapdb plugin Statically])
             fi
         fi
     fi
@@ -1268,7 +1268,8 @@ AH_BOTTOM([
 
 
 /* Create a struct iovec if we need one */
-#if !defined(_WIN32) && !defined(HAVE_SYS_UIO_H)
+#if !defined(_WIN32)
+#if !defined(HAVE_SYS_UIO_H)
 /* (win32 is handled in sasl.h) */
 struct iovec {
     char *iov_base;
@@ -1277,6 +1278,7 @@ struct iovec {
 #else
 #include <sys/types.h>
 #include <sys/uio.h>
+#endif
 #endif
 
 /* location of the random number generator */
@@ -1315,9 +1317,10 @@ struct iovec {
 
 #include <stdlib.h>
 #include <sys/types.h>
-#include <sys/socket.h>
 #ifndef WIN32
+# include <sys/socket.h>
 # include <netdb.h>
+# include <netinet/in.h>
 # ifdef HAVE_SYS_PARAM_H
 #  include <sys/param.h>
 # endif
@@ -1326,13 +1329,11 @@ struct iovec {
 #endif /* WIN32 */
 #include <string.h>
 
-#include <netinet/in.h>
-
 #ifndef HAVE_SOCKLEN_T
 typedef unsigned int socklen_t;
 #endif /* HAVE_SOCKLEN_T */
 
-#ifndef HAVE_STRUCT_SOCKADDR_STORAGE
+#if !defined(HAVE_STRUCT_SOCKADDR_STORAGE) && !defined(WIN32)
 #define	_SS_MAXSIZE	128	/* Implementation specific max size */
 #define	_SS_PADSIZE	(_SS_MAXSIZE - sizeof (struct sockaddr))
 
@@ -1396,12 +1397,25 @@ struct sockaddr_storage {
 #define HIER_DELIMITER '/'
 #endif
 
+#ifdef WIN32
+#define SASL_ROOT_KEY "SOFTWARE\\Carnegie Mellon\\Project Cyrus\\SASL Library"
+#define SASL_PLUGIN_PATH_ATTR "SearchPath"
+#define SASL_CONF_PATH_ATTR "ConfFile"
+
+#include <windows.h>
+inline static unsigned int sleep(unsigned int seconds) {
+       Sleep(seconds * 1000);
+       return 0;
+}
+#endif
+
 #endif /* CONFIG_H */
 ])
 
-AC_CONFIG_HEADERS(config.h)
+AM_CONFIG_HEADER(config.h)
 
 AC_OUTPUT(Makefile
+libsasl2.pc
 include/Makefile
 sasldb/Makefile
 plugins/Makefile

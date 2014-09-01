@@ -18,7 +18,11 @@
 # Debhelper control.
 export DH_ALWAYS_EXCLUDE=CVS
 #export DH_VERBOSE=1 # uncomment this to turn on verbose mode
-export DEB_BUILD_HARDENING=1
+
+# Enable package hardening through dpkg-buildflags
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
@@ -30,6 +34,7 @@ ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS)))
 	CONFIGURE_SQL=--enable-sql
 else
 	CONFIGURE_SQL=--disable-sql
+	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-sql
 endif
 
 # LDAP support may be turned off during the build, but is on by default.
@@ -39,6 +44,7 @@ ifeq (,$(findstring no-ldap,$(DEB_BUILD_OPTIONS)))
 else
 	CONFIGURE_LDAP=--without-ldap
 	CONFIGURE_LDAPDB=--disable-ldapdb
+	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-ldap
 endif
 
 # GSSAPI support may be turned off during the build, but is on by default
@@ -46,6 +52,10 @@ ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS)))
 	CONFIGURE_GSSAPI=--enable-gssapi
 else
 	CONFIGURE_GSSAPI=--disable-gssapi
+	DH_PACKAGE_EXCLUDES += -Nlibsasl2-modules-gssapi-mit \
+		-Nlibsasl2-modules-gssapi-heimdal \
+		-Ncyrus-sasl2-mit-dbg \
+		-Ncyrus-sasl2-heimdal-dbg
 endif
 
 CONFIGURE_COMMON_OPTIONS= \
@@ -96,25 +106,11 @@ export TMPPKG_HEIMDAL := $(CURDIR)/debian/tmp-heimdal
 AUTOFILES=acinclude.m4 aclocal.m4 config/config.sub config/config.guess \
 		  config/ltmain.sh config/libtool.m4
 BUILD_TMP_SUFFIX=.debian-build.tmp
-AUTOTOOLS=for i in $(AUTOFILES); do \
-		  	if [ -e $$i ]; then \
-				mv --verbose $$i `basename $$i`$(BUILD_TMP_SUFFIX) ; \
-			fi ; \
-		  done && \
-		  autoreconf -fi
-
-AUTOTOOLS_REVERSE=for i in $(AUTOFILES); do \
-				  	if [ -e `basename $$i`$(BUILD_TMP_SUFFIX) ]; then \
-						if [ -e $$i ]; then rm -fv $$i; fi ; \
-						mv --verbose `basename $$i`$(BUILD_TMP_SUFFIX) $$i ; \
-					fi ; \
-				  done
-
 
 ### The Makefile targets begin. ###
 
 %:
-	dh $@ --with=quilt
+	dh $@ --with=quilt --with=autotools_dev --with=autoreconf $(DH_PACKAGE_EXCLUDES)
 
 override_dh_auto_clean:
 	dh_auto_clean -B$(TMPBUILD_MIT)
@@ -123,8 +119,6 @@ override_dh_auto_clean:
 	rm -f $(CURDIR)/sample/sample-client \
 		$(CURDIR)/sample/sample-server
 	[ ! -f Makefile ] || $(MAKE) distclean
-	$(AUTOTOOLS_REVERSE)
-	(cd saslauthd && $(AUTOTOOLS_REVERSE) && cd ..)
 	-rm -f config.h config.log autom4ate.cache
 
 	# Remove symlinks that the CMU build sets up but never removes.
@@ -141,9 +135,6 @@ override_dh_auto_clean:
 	rm -rf $(TMPBUILD_MIT) $(TMPBUILD_HEIMDAL) $(TMPPKG_MIT) $(TMPPKG_HEIMDAL)
 
 override_dh_auto_configure:
-	$(AUTOTOOLS)
-	(cd saslauthd && $(AUTOTOOLS) && cd ..)
-
 	LDFLAGS="$(LDFLAGS) -L/usr/lib/mit-krb5 -Wl,-z,defs" \
 	CFLAGS="$(CFLAGS)" CPPFLAGS="$(CPPFLAGS) -I/usr/include/mit-krb5" \
 	dh_auto_configure -B$(TMPBUILD_MIT) -- $(CONFIGURE_COMMON_OPTIONS) --with-gss_impl=mit
@@ -204,7 +195,9 @@ override_dh_auto_install:
 	# Alter the rpath of certain binaries and shared libraries.
 	chrpath -d $(TMPPKG_MIT)/usr/sbin/sasldblistusers2 \
 		$(TMPPKG_MIT)/usr/sbin/saslpasswd2
-	chrpath -d $(TMPPKG_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libsql.so.2.0.*
+ifeq (,$(findstring no-sql,$(DEB_BUILD_OPTIONS)))
+	chrpath -d $(TMPPKG_MIT)/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2/libsql.so.*.*.*
+endif
 
 	# Install the sasl-sample-client and -server man pages.
 	dh_installman -psasl2-bin sasl-sample-client.8 sasl-sample-server.8
@@ -219,20 +212,26 @@ override_dh_auto_install:
 	install -m 755 -D $(CURDIR)/debian/gen-auth/gen-auth \
 		$(TMPPKG_MIT)/usr/bin/gen-auth
 
+	# Install logcheck snippet
+	install -m 755 -D $(CURDIR)/debian/libsasl2-modules.logcheck.server \
+		$(TMPPKG_MIT)/etc/logcheck/ignore.d.server/libsasl2-modules
+
 override_dh_install:
-	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_MIT) -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal
-	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_HEIMDAL) -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev
+	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_MIT) -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES)
+	dh_install -s --autodest --list-missing --sourcedir=$(TMPPKG_HEIMDAL) -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev $(DH_PACKAGE_EXCLUDES)
 
 override_dh_installinit:
-	dh_installinit --name=saslauthd start 20 2 3 4 5 . stop 20 1 .
+	dh_installinit $(DH_PACKAGE_EXCLUDES) --name=saslauthd start 20 2 3 4 5 . stop 20 0 1 6 .
 
 override_dh_strip:
-	dh_strip -Xlibgssapiv2.so.2.0. -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal --dbg-package=cyrus-sasl2-dbg
-	dh_strip -Xlibgs2.so.2.0. -Xlibscram.so.2.0. -plibsasl2-modules-gssapi-mit --dbg-package=cyrus-sasl2-mit-dbg
-	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
+	dh_strip -Xlibgssapiv2.so. -psasl2-bin -plibsasl2-2 -plibsasl2-modules -plibsasl2-modules-db -plibsasl2-modules-ldap -plibsasl2-modules-otp -plibsasl2-modules-sql -plibsasl2-modules-gssapi-mit -plibsasl2-dev -Nlibsasl2-modules-gssapi-heimdal $(DH_PACKAGE_EXCLUDES) --dbg-package=cyrus-sasl2-dbg
+ifeq (,$(findstring no-gssapi,$(DEB_BUILD_OPTIONS)))
+	dh_strip -Xlibgs2.so.3 -Xlibscram.so. -plibsasl2-modules-gssapi-mit --dbg-package=cyrus-sasl2-mit-dbg
+	dh_strip -plibsasl2-modules-gssapi-heimdal -Nsasl2-bin -Nlibsasl2-2 -Nlibsasl2-modules -Nlibsasl2-modules-db -Nlibsasl2-modules-ldap -Nlibsasl2-modules-otp -Nlibsasl2-modules-sql -Nlibsasl2-modules-gssapi-mit -Nlibsasl2-dev --dbg-package=cyrus-sasl2-heimdal-dbg
+endif
 
 override_dh_makeshlibs:
-	dh_makeshlibs -V "libsasl2-2 (>= 2.1.24)" -X/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2
+	dh_makeshlibs -X/usr/lib/$(DEB_HOST_MULTIARCH)/sasl2 $(DH_PACKAGE_EXCLUDES)
 
 override_dh_auto_test:
 	cd $(TMPBUILD_MIT)/saslauthd && $(MAKE) testsaslauthd

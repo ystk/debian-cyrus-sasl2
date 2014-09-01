@@ -1,4 +1,6 @@
 version=3
 
-opts="dversionmangle=s/\.dfsg1//" http://ftp.andrew.cmu.edu/pub/cyrus-mail/cyrus-sasl-(.*)\.tar\.gz debian debian/repack.sh
+opts=dversionmangle=s/\.dfsg\d*$// \
+ftp://ftp.cyrusimap.org/cyrus-sasl/ \
+(?:|.*/)cyrus-sasl(?:[_\-]v?|)(\d[^\s/]*)\.(?:tar\.xz|txz|tar\.bz2|tbz2|tar\.gz|tgz) debian debian/repack.sh
 

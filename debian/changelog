@@ -1,11 +1,118 @@
-cyrus-sasl2 (2.1.25.dfsg1-6+deb7u1) stable; urgency=low
+cyrus-sasl2 (2.1.26.dfsg1-11) unstable; urgency=medium
 
+  * Create libsasl2.pc from Makefile for proper substitions
+    (Closes: #754066)
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 11 Jul 2014 10:59:23 +0200
+
+cyrus-sasl2 (2.1.26.dfsg1-10) unstable; urgency=low
+
+  [ Roberto C. Sanchez ]
+  * Actually install the logcheck snippet in the package (Closes: #732771)
+  * Build-Depend on 'automake (>=1:1.14)', as automake in wheezy no longer
+    builds this package
+
+  [ Ondřej Surý ]
+  * Install libsasl2.pc into libsasl2-dev package (Closes: #752907)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 30 Jun 2014 09:18:27 +0200
+
+cyrus-sasl2 (2.1.26.dfsg1-9) unstable; urgency=high
+
+  * saslauthd: refuse to start if debug option (-d) is set in options
+    passed to init script (Closes: #558014)
+  * Fix FTBFS with clang (Closes: #739561)
+  * libsasl2-2: Restore empty /usr/lib/sasl2 directory (Closes: #739601)
+
+ -- Roberto C. Sanchez <roberto@connexer.com>  Sun, 02 Mar 2014 09:22:47 -0500
+
+cyrus-sasl2 (2.1.26.dfsg1-8) unstable; urgency=low
+
+  * Fix buginess that results in the keytab configuration option not
+    working on MIT Kerberos (Closes: #651308).
+  * Remove obsolete deversion from cyrus-sasl2-heimdal-dbg (Closes: #664729)
+  * Release server credentials when longer needed to prevent running out of
+    file descriptors (Closes: #722569).
+  * Incorporate new watch file.
+  * Update to Standards-Version 3.9.5 (no changes).
+  * Make saslauthd init script stop in run levels 0 and 6 (Closes: #608351).
+  * Add logcheck snippet to suppress "DIGEST-MD5 common mech free" messages
+    (Closes: #732771, #631932).
+  * Make DEB_BUILD_OPTIONS no-ldap, no-gssapi, no-sql actually work,
+    thanks to Daniel Schepler for the patch (Closes: #724513).
+  * Rename libsasl2-3 back to libsasl2-2, ABI breakage has already been
+    handle previously and SONAME bump is not necessary.
+  * Include sys/types.h in sasl.h (Closes: #719165).
+  * Fix transposition of realm and service in debug log (Closes: #732373).
+  * Add Polish debconf translation, thanks to Michał Kułach (Closes: #661249).
+  * Changes to make lintian happy:
+    + Use canonical URIs for Vcs-Browser and Vcs-Git control fields.
+    + Make -dbg packages "Multi-Arch: same" so they are co-installable
+    + Re-format NEWS file to get rid of changelog-style formatting
+
+ -- Roberto C. Sanchez <roberto@connexer.com>  Tue, 11 Feb 2014 18:58:43 -0500
+
+cyrus-sasl2 (2.1.26.dfsg1-7) experimental; urgency=low
+
+  * Add libsasl2-modules-db to the include/exclude lists in debian/rules.
+
+ -- Adam Conrad <adconrad@0c3.net>  Sun, 06 Oct 2013 20:12:53 -0600
+
+cyrus-sasl2 (2.1.26.dfsg1-6) experimental; urgency=low
+
+  * Split libsasl2-modules-db out of libsasl2-modules, so we can depend on
+    it for smooth upgrades from wheezy without pulling in all the modules.
+  * Explicitly build-depend on libkrb5-dev to fix FTBFS. (Closes: #724147)
+
+ -- Adam Conrad <adconrad@0c3.net>  Sun, 06 Oct 2013 18:52:15 -0600
+
+cyrus-sasl2 (2.1.26.dfsg1-5) experimental; urgency=low
+
+  * Use --ignore-fail-on-non-empty option to rmdir instead of non-existent -f
+    (Closes: #714601)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 01 Jul 2013 12:06:53 +0200
+
+cyrus-sasl2 (2.1.26.dfsg1-4) experimental; urgency=low
+
+  * Change depend on libsasl2-modules to libsasl2-2 in libsasl2-dev
+    (Closes: #714514)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 01 Jul 2013 09:30:51 +0200
+
+cyrus-sasl2 (2.1.26.dfsg1-3) experimental; urgency=low
+
+  * Purge /usr/lib/sasl2/berkeley_db.active if the /etc/sasldb2 was purged
+    or doesn't exist
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 26 Jun 2013 10:08:09 +0200
+
+cyrus-sasl2 (2.1.26.dfsg1-2) experimental; urgency=low
+
+  * Ensure libsasl2-3 coinstallability with libsasl2-2
+   + Install berkeley_db.txt to sasl2-bin (Closes: #713932)
+   + Move sasldb plugin from libsasl2-3 to libsasl2-modules
+     (Closes: #714091)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 26 Jun 2013 10:08:09 +0200
+
+cyrus-sasl2 (2.1.26.dfsg1-1) experimental; urgency=low
+
+  * New upstream version 2.1.26.dfsg1
+  * Update patches for 2.1.26 release
+  * libsasl2-2 -> libsasl2-3 transition (Closes: #665476)
+
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 06 Jun 2013 13:06:51 +0200
+
+cyrus-sasl2 (2.1.25.dfsg1-7) unstable; urgency=low
+
+  * Use AC_CONFIG_MACRO_DIRS instead of AC_CONFIG_MACRO_DIR (Closes: #711219)
   * Fix heavy CPU usage in saslauthd (Closes: #708552)
   * Send LOGOUT before closing connection in auth_rimap (Closes: #708547)
   * Fix garbage in output buffer when using canonuser_plugin: ldapdb
     (Closes: #689346)
 
- -- Ondřej Surý <ondrej@debian.org>  Fri, 17 May 2013 18:11:26 +0200
+ -- Ondřej Surý <ondrej@debian.org>  Thu, 06 Jun 2013 13:41:17 +0200
 
 cyrus-sasl2 (2.1.25.dfsg1-6) unstable; urgency=low
 

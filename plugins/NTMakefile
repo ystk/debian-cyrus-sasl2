@@ -177,16 +177,16 @@ install: $(PLUGINS)
 all-recursive : $(PLUGINS)
 
 getaddrinfo.c: ..\lib\getaddrinfo.c
-	copy ..\lib\getaddrinfo.c .
+	xcopy /D /Y ..\lib\getaddrinfo.c .
 
 getnameinfo.c: ..\lib\getnameinfo.c
-	copy ..\lib\getnameinfo.c .
+	xcopy /D /Y ..\lib\getnameinfo.c .
 
 allockey.c: ..\sasldb\allockey.c
-	copy ..\sasldb\allockey.c .
+	xcopy /D /Y ..\sasldb\allockey.c .
 
 db_berkeley.c: ..\sasldb\db_berkeley.c
-	copy ..\sasldb\db_berkeley.c .
+	xcopy /D /Y ..\sasldb\db_berkeley.c .
 
 #Add /pdb: option?
 
@@ -288,7 +288,7 @@ CLEAN :
 
 $(generated_rc):
 	copy <<temp.rc $@
-#include "afxres.h"
+#include "windows.h"
 
 VS_VERSION_INFO VERSIONINFO
  FILEVERSION $(SASL_VERSION_MAJOR),$(SASL_VERSION_MINOR),$(SASL_VERSION_STEP),0
@@ -311,7 +311,7 @@ BEGIN
             VALUE "FileDescription", "CMU SASL $(@B) plugin\0"
             VALUE "FileVersion", "$(SASL_VERSION_MAJOR).$(SASL_VERSION_MINOR).$(SASL_VERSION_STEP).0\0"
             VALUE "InternalName", "$(@B)\0"
-            VALUE "LegalCopyright", "Copyright (c) Carnegie Mellon University 2002-2011\0"
+            VALUE "LegalCopyright", "Copyright (c) Carnegie Mellon University 2002-2012\0"
             VALUE "OriginalFilename", "$(@B).dll\0"
             VALUE "ProductName", "Carnegie Mellon University SASL\0"
             VALUE "ProductVersion", "$(SASL_VERSION_MAJOR).$(SASL_VERSION_MINOR).$(SASL_VERSION_STEP)-0"

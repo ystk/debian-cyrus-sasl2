@@ -4,7 +4,7 @@
 # Required-Start:    $local_fs $remote_fs
 # Required-Stop:     $local_fs $remote_fs
 # Default-Start:     2 3 4 5
-# Default-Stop:      1
+# Default-Stop:      0 1 6
 # Short-Description: saslauthd startup script
 # Description:       This script starts the saslauthd daemon. It is
 #                    configured using the file /etc/default/saslauthd.
@@ -101,6 +101,11 @@ start_instance()
 
 	log_daemon_msg "Starting $DESC" "$NAME"
 
+	# Check to see if the debug option is specified; fail if it is
+	if [ `expr match "$OPTIONS" '-d'` -ne 0 ]; then
+		log_failure_msg "The debug option (-d) has been set in /etc/default/saslauthd or elsewhere, not starting"
+		return 1
+	fi
 	# Set OPTIONS to a default value, as noted in the defaults file
 	if [ -z "$OPTIONS" ]; then
 		log_warning_msg "Options (OPTIONS) undefined in $1, using default (-c -m /var/run/saslauthd)"

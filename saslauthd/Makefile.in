@@ -45,8 +45,8 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	config/missing config/mkinstalldirs getaddrinfo.c \
 	getnameinfo.c
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/../config/kerberos_v4.m4 \
-	$(top_srcdir)/../config/sasldb.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/config/kerberos_v4.m4 \
+	$(top_srcdir)/config/sasldb.m4 \
 	$(top_srcdir)/../cmulocal/berkdb.m4 \
 	$(top_srcdir)/../cmulocal/bsd_sockets.m4 \
 	$(top_srcdir)/../cmulocal/c-attribute.m4 \
