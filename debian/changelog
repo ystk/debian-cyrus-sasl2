@@ -1,3 +1,17 @@
+cyrus-sasl2 (2.1.26.dfsg1-13) unstable; urgency=medium
+
+  * Shutdown down the write side of the socket and wait for the client to
+    close the connection (0 byte read) before closing the server side
+    (Closes: #777349) (Courtesy of Kees Cook)
+
+ -- Ondřej Surý <ondrej@debian.org>  Mon, 09 Mar 2015 14:21:23 +0100
+
+cyrus-sasl2 (2.1.26.dfsg1-12) unstable; urgency=medium
+
+  * Add patch to fix login to dovecot imapd 2.x (Closes: #715040)
+
+ -- Ondřej Surý <ondrej@debian.org>  Fri, 17 Oct 2014 14:41:06 +0200
+
 cyrus-sasl2 (2.1.26.dfsg1-11) unstable; urgency=medium
 
   * Create libsasl2.pc from Makefile for proper substitions
