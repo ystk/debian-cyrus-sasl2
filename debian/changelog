@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.26.dfsg1-13+deb8u1) jessie-security; urgency=high
+
+  * [CVE-2013-4122]: Handle NULL returns from glibc 2.17+ crypt()
+    (Closes: #784112)
+
+ -- Ondřej Surý <ondrej@debian.org>  Wed, 23 Sep 2015 14:35:31 +0200
+
 cyrus-sasl2 (2.1.26.dfsg1-13) unstable; urgency=medium
 
   * Shutdown down the write side of the socket and wait for the client to

@@ -31,3 +31,4 @@
 properly-create-libsasl2.pc.patch
 bug715040.patch
 early-hangup.patch
+CVE-2013-4122.patch
