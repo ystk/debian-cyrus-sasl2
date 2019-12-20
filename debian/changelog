@@ -1,3 +1,10 @@
+cyrus-sasl2 (2.1.26.dfsg1-13+deb8u2) jessie-security; urgency=medium
+
+  * Non-maintainer upload by the LTS team.
+  * CVE-2019-19906: Fix off-by-one issue in _sasl_add_string function.
+
+ -- Mike Gabriel <sunweaver@debian.org>  Fri, 20 Dec 2019 15:26:43 +0100
+
 cyrus-sasl2 (2.1.26.dfsg1-13+deb8u1) jessie-security; urgency=high
 
   * [CVE-2013-4122]: Handle NULL returns from glibc 2.17+ crypt()
