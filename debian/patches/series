@@ -33,3 +33,6 @@ bug715040.patch
 early-hangup.patch
 CVE-2013-4122.patch
 CVE-2019-19906.patch
+
+0047-Fix-_sasl_add_string.patch
+0048-CVE-2022-24407-Escape-password-for-SQL-insert-update.patch

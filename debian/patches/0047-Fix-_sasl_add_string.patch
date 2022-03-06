@@ -1,0 +1,29 @@
+From: Guido Kiener <guido@kiener-muenchen.de>
+Date: Mon, 25 Jan 2021 17:57:02 +0100
+Subject: Fix _sasl_add_string
+Origin: https://github.com/cyrusimap/cyrus-sasl/commit/5ac1beeb574cd9d0a518d72330b19d2460688089
+
+Issue #587 was not solved correct.
+
+_sasl_add_string adds zero terminator to the output string.
+This cuts log messages after the first '%s' of the format string.
+With the fix the function _sasl_log now logs the complete message.
+
+Signed-off-by: Guido Kiener <guido@kiener-muenchen.de>
+---
+ lib/common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+Index: cyrus-sasl2-2.1.27~101-g0780600+dfsg/lib/common.c
+===================================================================
+--- cyrus-sasl2-2.1.27~101-g0780600+dfsg.orig/lib/common.c	2022-02-27 01:00:29.303921275 +0100
++++ cyrus-sasl2-2.1.27~101-g0780600+dfsg/lib/common.c	2022-02-27 01:00:29.303921275 +0100
+@@ -197,7 +197,7 @@
+     return SASL_NOMEM;
+ 
+   strncpy(*out + *outlen, add, addlen);
+-  *outlen += addlen;
++  *outlen += addlen-1;
+ 
+   return SASL_OK;
+ }
